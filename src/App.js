@@ -5,11 +5,11 @@ import Searchbar from "./components/Searchbar";
 import ImageGallery from "./components/ImageGallery";
 import Button from "./components/Button";
 
-const key = "24369535-8c0b0d7fa83b493b4b387e45e";
+const APIkey = "24369535-8c0b0d7fa83b493b4b387e45e";
 
 class App extends Component {
   state = {
-    images: null,
+    images: [],
     loading: false,
     selectedImage: null,
     imagesType: "",
@@ -20,7 +20,7 @@ class App extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.imagesType !== this.state.imagesType) {
       fetch(
-        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
+        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${APIkey}&image_type=photo&orientation=horizontal&per_page=12`
       )
         .then((Response) => {
           if (Response.ok) {
@@ -43,16 +43,11 @@ class App extends Component {
 
     if (prevState.page !== this.state.page) {
       fetch(
-        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`
+        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${APIkey}&image_type=photo&orientation=horizontal&per_page=12`
       )
         .then((response) => {
           response.json();
         })
-        // .then((images) => {
-        //   this.setState({
-        //     images: [...prevState.images, ...images],
-        //   });
-        // })
         .then((images) =>
           this.setState((prevState) => ({
             images: [...images, ...prevState.images],
@@ -73,12 +68,13 @@ class App extends Component {
   };
 
   render() {
+    const { error, images } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.getImageType} />
-        {this.state.error && <div>{this.state.error.message}</div>}
-        {this.state.images && <ImageGallery images={this.state.images} />}
-        {this.state.images && <Button onClick={this.handleLoadMore} />}
+        {error && <div>{error.message}</div>}
+        {images.length !== 0 && <ImageGallery images={images} />}
+        {images.length !== 0 && <Button onClick={this.handleLoadMore} />}
       </div>
     );
   }

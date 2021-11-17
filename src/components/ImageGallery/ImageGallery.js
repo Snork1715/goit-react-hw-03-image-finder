@@ -1,22 +1,19 @@
 import React, { Component } from "react";
 import ImageGalleryItem from "../ImageGalleryItem";
-// import Modal from "../Modal";
 import "./ImageGallery.css";
 
 class ImageGallery extends Component {
-  state = { showModal: false };
-
-  toggleModal = () => {
-    this.setState((prevState) => ({
-      showModal: !prevState.showModal,
-    }));
-  };
-
   render() {
     const { images } = this.props;
     return (
       <ul className="ImageGallery">
-        <ImageGalleryItem images={images} />
+        {images.hits.map((image) => (
+          <ImageGalleryItem
+            key={image.id}
+            webformatURL={image.webformatURL}
+            bigImage={image.largeImageURL}
+          />
+        ))}
       </ul>
     );
   }
