@@ -7,7 +7,7 @@ class ImageGallery extends Component {
     const { images } = this.props;
     return (
       <ul className="ImageGallery">
-        {images.hits.map((image) => (
+        {images.map((image) => (
           <ImageGalleryItem
             key={image.id}
             webformatURL={image.webformatURL}

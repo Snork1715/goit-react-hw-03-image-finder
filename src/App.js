@@ -32,8 +32,8 @@ class App extends Component {
             )
           );
         })
-        .then((images) => {
-          this.setState({ images });
+        .then(({ hits }) => {
+          this.setState({ images: hits });
         })
         .catch((error) => this.setState({ error }))
         .finally(() => {
@@ -41,17 +41,17 @@ class App extends Component {
         });
     }
 
-    if (prevState.page !== this.state.page) {
+    if (prevState.page !== this.state.page && this.state.page !== 1) {
       fetch(
         `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${APIkey}&image_type=photo&orientation=horizontal&per_page=12`
       )
         .then((response) => {
-          response.json();
+          return response.json();
         })
-        .then((images) =>
-          this.setState((prevState) => ({
-            images: [...images, ...prevState.images],
-          }))
+        .then(({ hits }) =>
+          this.setState({
+            images: [...prevState.images, ...hits],
+          })
         )
         .finally(() => {
           this.setState({ loading: false });
