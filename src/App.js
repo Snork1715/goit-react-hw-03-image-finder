@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import "./App.css";
-// import Skeleton from "./components/Skeleton";
+import Skeleton from "./components/Skeleton";
 import Searchbar from "./components/Searchbar";
 import ImageGallery from "./components/ImageGallery";
 import Button from "./components/Button";
+import FetchImages from "./services/FetchImage";
 
 const APIkey = "24369535-8c0b0d7fa83b493b4b387e45e";
 
@@ -19,35 +20,23 @@ class App extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.imagesType !== this.state.imagesType) {
-      fetch(
-        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${APIkey}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then((Response) => {
-          if (Response.ok) {
-            return Response.json();
-          }
-          return Promise.reject(
-            new Error(
-              `Выбран некорректный тип фотографий ${this.state.imagesType}`
-            )
-          );
-        })
-        .then(({ hits }) => {
-          this.setState({ images: hits });
-        })
-        .catch((error) => this.setState({ error }))
-        .finally(() => {
-          this.setState({ loading: false });
-        });
+      this.setState({ loading: true, images: [] });
+
+      setTimeout(() => {
+        FetchImages.fetchImage(this.state.imagesType, this.state.page, APIkey)
+          .then(({ hits }) => {
+            this.setState({ images: hits });
+          })
+          .catch((error) => this.setState({ error }))
+          .finally(() => {
+            this.setState({ loading: false });
+          });
+      }, 1000);
     }
 
     if (prevState.page !== this.state.page && this.state.page !== 1) {
-      fetch(
-        `https://pixabay.com/api/?q=${this.state.imagesType}&page=${this.state.page}&key=${APIkey}&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then((response) => {
-          return response.json();
-        })
+      this.setState({ loading: true });
+      FetchImages.fetchImage(this.state.imagesType, this.state.page, APIkey)
         .then(({ hits }) =>
           this.setState({
             images: [...prevState.images, ...hits],
@@ -68,11 +57,12 @@ class App extends Component {
   };
 
   render() {
-    const { error, images } = this.state;
+    const { error, images, loading } = this.state;
     return (
       <div className="App">
         <Searchbar onSubmit={this.getImageType} />
         {error && <div>{error.message}</div>}
+        {loading && <Skeleton />}
         {images.length !== 0 && <ImageGallery images={images} />}
         {images.length !== 0 && <Button onClick={this.handleLoadMore} />}
       </div>
