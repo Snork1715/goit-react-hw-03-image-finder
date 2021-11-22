@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Loader from "react-loader-spinner";
+import "./Skeleton.css";
 
 class Skeleton extends Component {
   render() {
@@ -7,9 +8,9 @@ class Skeleton extends Component {
       <Loader
         className="Skeleton"
         type="Circles"
-        color="#ff6200"
-        height={100}
-        width={100}
+        color="#006eff"
+        height={40}
+        width={40}
         timeout={3000} //3 secs
       />
     );

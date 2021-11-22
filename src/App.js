@@ -6,8 +6,6 @@ import ImageGallery from "./components/ImageGallery";
 import Button from "./components/Button";
 import FetchImages from "./services/FetchImage";
 
-const APIkey = "24369535-8c0b0d7fa83b493b4b387e45e";
-
 class App extends Component {
   state = {
     images: [],
@@ -23,7 +21,7 @@ class App extends Component {
       this.setState({ loading: true, images: [] });
 
       setTimeout(() => {
-        FetchImages.fetchImage(this.state.imagesType, this.state.page, APIkey)
+        FetchImages.fetchImage(this.state.imagesType, this.state.page)
           .then(({ hits }) => {
             this.setState({ images: hits });
           })
@@ -36,15 +34,17 @@ class App extends Component {
 
     if (prevState.page !== this.state.page && this.state.page !== 1) {
       this.setState({ loading: true });
-      FetchImages.fetchImage(this.state.imagesType, this.state.page, APIkey)
-        .then(({ hits }) =>
-          this.setState({
-            images: [...prevState.images, ...hits],
-          })
-        )
-        .finally(() => {
-          this.setState({ loading: false });
-        });
+      setTimeout(() => {
+        FetchImages.fetchImage(this.state.imagesType, this.state.page)
+          .then(({ hits }) =>
+            this.setState({
+              images: [...prevState.images, ...hits],
+            })
+          )
+          .finally(() => {
+            this.setState({ loading: false });
+          });
+      }, 1500);
     }
   }
 
@@ -63,8 +63,14 @@ class App extends Component {
         <Searchbar onSubmit={this.getImageType} />
         {error && <div>{error.message}</div>}
         {loading && <Skeleton />}
-        {images.length !== 0 && <ImageGallery images={images} />}
-        {images.length !== 0 && <Button onClick={this.handleLoadMore} />}
+        <ImageGallery images={images} />
+        {images.length !== 0 && !this.state.loading ? (
+          <Button onClick={this.handleLoadMore} />
+        ) : images.length !== 0 && this.state.loading ? (
+          <Skeleton />
+        ) : (
+          ""
+        )}
       </div>
     );
   }
