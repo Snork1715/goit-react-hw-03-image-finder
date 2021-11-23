@@ -10,7 +10,7 @@ class App extends Component {
   state = {
     images: [],
     loading: false,
-    selectedImage: null,
+    // selectedImage: null,
     imagesType: "",
     error: null,
     page: 1,
